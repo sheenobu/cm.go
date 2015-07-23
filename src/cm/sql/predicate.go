@@ -19,7 +19,7 @@ func (pred *SqlEqPredicate) Apply(c cm.Collection) error {
 	col.filterStatements = append(col.filterStatements,
 		fmt.Sprintf("%s = ?", pred.Column.Name()))
 
-	col.values = append(col.values, pred.Value)
+	col.filterValues = append(col.filterValues, pred.Value)
 
 	return nil
 }
@@ -40,7 +40,7 @@ func (pred *SqlNotEqPredicate) Apply(c cm.Collection) error {
 	col.filterStatements = append(col.filterStatements,
 		fmt.Sprintf("%s != ?", pred.Column.Name()))
 
-	col.values = append(col.values, pred.Value)
+	col.filterValues = append(col.filterValues, pred.Value)
 
 	return nil
 }
@@ -69,7 +69,7 @@ func (pred *SqlLikePredicate) Apply(c cm.Collection) error {
 	col.filterStatements = append(col.filterStatements,
 		fmt.Sprintf("%s %s ?", pred.Column.Name(), like))
 
-	col.values = append(col.values, pred.Value)
+	col.filterValues = append(col.filterValues, pred.Value)
 
 	return nil
 }

@@ -20,7 +20,8 @@ type SqlTable struct {
 	columns          []string
 	filterStatements []string
 	updateStatements []string
-	values           []interface{}
+	updateValues     []interface{}
+	filterValues     []interface{}
 }
 
 // New defines a new SqlTable based on the database connection and table name.
@@ -31,7 +32,8 @@ func New(db *sqlx.DB, table string) *SqlTable {
 		columns:          make([]string, 0),
 		filterStatements: make([]string, 0),
 		updateStatements: make([]string, 0),
-		values:           make([]interface{}, 0),
+		updateValues:     make([]interface{}, 0),
+		filterValues:     make([]interface{}, 0),
 	}
 }
 
@@ -98,7 +100,7 @@ func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 		err = sql.database.Select(list, selectQ)
 	} else {
 		q := selectQ + " where " + strings.Join(sql.filterStatements, " and ")
-		err = sql.database.Select(list, q, sql.values...)
+		err = sql.database.Select(list, q, sql.filterValues...)
 	}
 
 	return err
@@ -111,7 +113,7 @@ func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) 
 	if len(sql.filterStatements) == 0 {
 		err = sql.database.Select(single, selectQ+" limit 1")
 	} else {
-		err = sql.database.Select(single, selectQ+" where "+strings.Join(sql.filterStatements, " and ")+" limit 1", sql.values...)
+		err = sql.database.Select(single, selectQ+" where "+strings.Join(sql.filterStatements, " and ")+" limit 1", sql.filterValues...)
 	}
 	return err
 }
@@ -123,7 +125,7 @@ func (sql SqlTable) Delete(ctx context.Context) (err error) {
 	if len(sql.filterStatements) == 0 {
 		_, err = sql.database.Exec(deleteQ)
 	} else {
-		_, err = sql.database.Exec(deleteQ+" where "+strings.Join(sql.filterStatements, " and "), sql.values...)
+		_, err = sql.database.Exec(deleteQ+" where "+strings.Join(sql.filterStatements, " and "), sql.filterValues...)
 	}
 
 	return err
@@ -135,10 +137,14 @@ func (sql SqlTable) Update(ctx context.Context) (err error) {
 
 	updateQ = updateQ + " " + strings.Join(sql.updateStatements, ", ")
 
+	vals := make([]interface{}, 0)
+	vals = append(vals, sql.updateValues...)
+	vals = append(vals, sql.filterValues...)
+
 	if len(sql.filterStatements) == 0 {
-		_, err = sql.database.Exec(updateQ, sql.values...)
+		_, err = sql.database.Exec(updateQ, vals...)
 	} else {
-		_, err = sql.database.Exec(updateQ+" where "+strings.Join(sql.filterStatements, " and "), sql.values...)
+		_, err = sql.database.Exec(updateQ+" where "+strings.Join(sql.filterStatements, " and "), vals...)
 	}
 
 	return err

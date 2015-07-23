@@ -344,6 +344,108 @@ func TestUpdateAll(t *testing.T) {
 	}
 }
 
+// TestUpdateFilterL tests the update function on filtered items
+func TestUpdateFilterL(t *testing.T) {
+
+	ctx := context.Background()
+
+	Cars := createCars()
+	err := Cars.Init(Cars)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, model, make, year)
+		values ('1', 'Honda', 'Civic', '1993'),
+	           ('2', 'Toyota', 'Corolla', '1993');
+	`)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars := make([]Car, 0)
+
+	err = Cars.Filter(Cars.Model.Eq("Honda")).Edit(Cars.Model.Set("Whatever")).Update(ctx)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars = make([]Car, 0)
+
+	if err = Cars.Filter(Cars.Model.Eq("Honda")).List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 0 {
+		t.Errorf("Expected all cars to be of length 0, got %d", i)
+	}
+
+	cars = make([]Car, 0)
+
+	if err = Cars.Filter(Cars.Model.Eq("Whatever")).List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 1 {
+		t.Errorf("Expected all cars to be of length 1, got %d", i)
+	}
+
+}
+
+// TestUpdateFilterR tests the update function on filtered items
+func TestUpdateFilterR(t *testing.T) {
+
+	ctx := context.Background()
+
+	Cars := createCars()
+	err := Cars.Init(Cars)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, model, make, year)
+		values ('1', 'Honda', 'Civic', '1993'),
+	           ('2', 'Toyota', 'Corolla', '1993');
+	`)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars := make([]Car, 0)
+
+	err = Cars.Edit(Cars.Model.Set("Whatever")).Filter(Cars.Model.Eq("Honda")).Update(ctx)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars = make([]Car, 0)
+
+	if err = Cars.Filter(Cars.Model.Eq("Honda")).List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 0 {
+		t.Errorf("Expected all cars to be of length 0, got %d", i)
+	}
+
+	cars = make([]Car, 0)
+
+	if err = Cars.Filter(Cars.Model.Eq("Whatever")).List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 1 {
+		t.Errorf("Expected all cars to be of length 1, got %d", i)
+	}
+
+}
+
 // TestDeleteAll tests the delete function on all items
 func TestDeleteAll(t *testing.T) {
 

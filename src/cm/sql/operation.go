@@ -17,7 +17,7 @@ func (op *SqlUpdateOperation) Apply(c cm.Collection) error {
 	col.updateStatements = append(col.updateStatements,
 		fmt.Sprintf("%s = ?", op.Column.Name()))
 
-	col.values = append(col.values, op.Value)
+	col.updateValues = append(col.updateValues, op.Value)
 
 	return nil
 }
