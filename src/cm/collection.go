@@ -59,6 +59,7 @@ type Collection interface {
 		// Batch Operations
 	*/
 
+	Insert(context.Context, interface{}) error
 	Delete(context.Context) error
 	Update(context.Context) error
 

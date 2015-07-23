@@ -16,11 +16,11 @@ persistent collection management for golang
  * Deleting via filtering
  * Updating via filtering
  * Simple schema generation
+ * Inserting
 
 ## TODO
 
  * Automatic ID generation
- * Inserting
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity
  * Database Versioning

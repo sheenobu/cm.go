@@ -33,7 +33,7 @@ func createCars() *_Cars {
 	db, _ := sqlx.Connect("sqlite3", "cars.db")
 	return &_Cars{
 		Collection: New(db, "CARS"),
-		PrimaryKey: Column("id", "varchar(33) not null primary key"),
+		PrimaryKey: Column("id", "integer primary key"),
 		CarMake:    Column("make", "varchar(100) not null"),
 		Model:      Column("model", "varchar(100) not null"),
 		Year:       Column("year", "number not null"),
@@ -523,6 +523,51 @@ func TestDeleteFilter(t *testing.T) {
 	if len(cars) == 1 {
 		if cars[0].Model != "Toyota" {
 			t.Errorf("Expected remaining car to be Toyota, was %s", cars[0].Model)
+		}
+	}
+}
+
+// TestInsert tests the inesrt function
+func TestInsert(t *testing.T) {
+	ctx := context.Background()
+
+	Cars := createCars()
+	err := Cars.Init(Cars)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	car := &Car{
+		CarMake: "Honda",
+		Model:   "Civic",
+		Year:    1997,
+	}
+
+	err = Cars.Insert(ctx, car)
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars := make([]Car, 0)
+	if err = Cars.List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 1 {
+		t.Errorf("Expected all cars to be of length 1, got %d", i)
+	}
+
+	if len(cars) == 1 {
+		if cars[0].Model == "Honda" {
+			t.Errorf("Expected remaining car to be Honda, was %s", cars[0].Model)
+		}
+		if cars[0].PrimaryKey == "" {
+			t.Errorf("No PrimaryKey on car")
 		}
 	}
 }

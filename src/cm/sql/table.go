@@ -16,8 +16,11 @@ import (
 type SqlTable struct {
 	Table string
 
-	database         *sqlx.DB
-	columns          []string
+	database     *sqlx.DB
+	asColumns    []string
+	insColumns   []string
+	namedColumns []string
+
 	filterStatements []string
 	updateStatements []string
 	updateValues     []interface{}
@@ -27,9 +30,13 @@ type SqlTable struct {
 // New defines a new SqlTable based on the database connection and table name.
 func New(db *sqlx.DB, table string) *SqlTable {
 	return &SqlTable{
-		Table:            table,
-		database:         db,
-		columns:          make([]string, 0),
+		Table:    table,
+		database: db,
+
+		asColumns:    make([]string, 0),
+		insColumns:   make([]string, 0),
+		namedColumns: make([]string, 0),
+
 		filterStatements: make([]string, 0),
 		updateStatements: make([]string, 0),
 		updateValues:     make([]interface{}, 0),
@@ -63,8 +70,14 @@ func (sql *SqlTable) Init(iface interface{}) error {
 				cs[i] = strings.ToLower(cs[i])
 			}
 
-			sql.columns = append(sql.columns,
+			sql.asColumns = append(sql.asColumns,
 				vc.Name()+" as "+strings.ToLower(fx.Name))
+
+			sql.insColumns = append(sql.insColumns,
+				vc.Name())
+
+			sql.namedColumns = append(sql.namedColumns,
+				":"+strings.ToLower(fx.Name))
 
 		}
 	}
@@ -94,7 +107,7 @@ func (sql SqlTable) Edit(op cm.Operation) cm.Collection {
 // List resolves the collection and applies the results to the given slice pointer
 func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 
-	selectQ := "select " + strings.Join(sql.columns, ", ") + " from " + sql.Table
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
 
 	if len(sql.filterStatements) == 0 {
 		err = sql.database.Select(list, selectQ)
@@ -108,7 +121,7 @@ func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 
 // Single resolves the collection and applies the results to the given slice pointer.
 func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) {
-	selectQ := "select " + strings.Join(sql.columns, ", ") + " from " + sql.Table
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
 
 	if len(sql.filterStatements) == 0 {
 		err = sql.database.Select(single, selectQ+" limit 1")
@@ -146,6 +159,32 @@ func (sql SqlTable) Update(ctx context.Context) (err error) {
 	} else {
 		_, err = sql.database.Exec(updateQ+" where "+strings.Join(sql.filterStatements, " and "), vals...)
 	}
+
+	return err
+}
+
+// Insert inserts the given object
+func (sql SqlTable) Insert(ctx context.Context, i interface{}) (err error) {
+	insertQ := "insert into " + sql.Table + " (" + strings.Join(sql.insColumns, ",") + ") values "
+	insertQ = insertQ + " (" + strings.Join(sql.namedColumns, ",") + ")"
+
+	query, args, err := sqlx.Named(insertQ, i)
+
+	arg2 := make([]interface{}, 0)
+
+	for _, a := range args {
+		if s, ok := a.(string); ok && s == "" {
+			arg2 = append(arg2, nil)
+		} else {
+			arg2 = append(arg2, a)
+		}
+	}
+
+	if err != nil {
+		return err
+	}
+
+	_, err = sql.database.Exec(query, arg2...)
 
 	return err
 }
