@@ -380,7 +380,7 @@ func TestUpdateFilterL(t *testing.T) {
 	}
 
 	if i := len(cars); i != 0 {
-		t.Errorf("Expected all cars to be of length 0, got %d", i)
+		t.Errorf("Expected Honda cars to be of length 0, got %d", i)
 	}
 
 	cars = make([]Car, 0)
@@ -390,7 +390,7 @@ func TestUpdateFilterL(t *testing.T) {
 	}
 
 	if i := len(cars); i != 1 {
-		t.Errorf("Expected all cars to be of length 1, got %d", i)
+		t.Errorf("Expected Whatever cars to be of length 1, got %d", i)
 	}
 
 }
@@ -431,7 +431,7 @@ func TestUpdateFilterR(t *testing.T) {
 	}
 
 	if i := len(cars); i != 0 {
-		t.Errorf("Expected all cars to be of length 0, got %d", i)
+		t.Errorf("Expected Honda cars to be of length 0, got %d", i)
 	}
 
 	cars = make([]Car, 0)
@@ -441,7 +441,7 @@ func TestUpdateFilterR(t *testing.T) {
 	}
 
 	if i := len(cars); i != 1 {
-		t.Errorf("Expected all cars to be of length 1, got %d", i)
+		t.Errorf("Expected Whatever cars to be of length 1, got %d", i)
 	}
 
 }
