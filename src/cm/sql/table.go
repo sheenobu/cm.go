@@ -12,6 +12,7 @@ import (
 	"cm"
 )
 
+// SqlTable defines the Collection that interacts with a sqlx.DB connection
 type SqlTable struct {
 	Table string
 
@@ -21,88 +22,7 @@ type SqlTable struct {
 	values           []interface{}
 }
 
-func Column(name string, ctype string) cm.ValueColumn {
-	return SqlValueColumn{name, ctype}
-}
-
-type SqlValueColumn struct {
-	name  string
-	ctype string
-}
-
-type SqlEqPredicate struct {
-	Column cm.ValueColumn
-	Value  interface{}
-}
-
-type SqlNotEqPredicate struct {
-	Column cm.ValueColumn
-	Value  interface{}
-}
-
-type SqlLikePredicate struct {
-	Column        cm.ValueColumn
-	Value         interface{}
-	CaseSensitive bool
-}
-
-func (s SqlValueColumn) Name() string {
-	return s.name
-}
-
-func (s SqlValueColumn) Type() string {
-	return s.ctype
-}
-
-func (s SqlValueColumn) Eq(i interface{}) cm.Predicate {
-	return &SqlEqPredicate{s, i}
-}
-
-func (s SqlValueColumn) NotEq(i interface{}) cm.Predicate {
-	return &SqlNotEqPredicate{s, i}
-}
-
-func (s SqlValueColumn) Like(caseSensitive bool, i interface{}) cm.Predicate {
-	return &SqlLikePredicate{s, i, caseSensitive}
-}
-
-func (pred *SqlEqPredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
-	col.filterStatements = append(col.filterStatements,
-		fmt.Sprintf("%s = ?", pred.Column.Name()))
-
-	col.values = append(col.values, pred.Value)
-
-	return nil
-}
-
-func (pred *SqlNotEqPredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
-	col.filterStatements = append(col.filterStatements,
-		fmt.Sprintf("%s != ?", pred.Column.Name()))
-
-	col.values = append(col.values, pred.Value)
-
-	return nil
-}
-
-func (pred *SqlLikePredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
-
-	like := "like"
-
-	if pred.CaseSensitive {
-		like = "ilike"
-	}
-
-	col.filterStatements = append(col.filterStatements,
-		fmt.Sprintf("%s %s ?", pred.Column.Name(), like))
-
-	col.values = append(col.values, pred.Value)
-
-	return nil
-}
-
+// New defines a new SqlTable based on the database connection and table name.
 func New(db *sqlx.DB, table string) *SqlTable {
 	return &SqlTable{
 		Table:            table,
@@ -113,6 +33,10 @@ func New(db *sqlx.DB, table string) *SqlTable {
 	}
 }
 
+// begin Collection implementation
+
+// Init initializes the sql table by performing reflection operations
+// on the interface
 func (sql *SqlTable) Init(iface interface{}) error {
 	columns := make([]string, 0)
 
@@ -142,7 +66,7 @@ func (sql *SqlTable) Init(iface interface{}) error {
 	}
 
 	createTable := fmt.Sprintf(`
-		create table %s 
+		create table %s
 			(%s);
 	`, sql.Table, strings.Join(columns, ", "))
 
@@ -151,11 +75,13 @@ func (sql *SqlTable) Init(iface interface{}) error {
 	return err
 }
 
+// Filter filters the collection on the given predicate
 func (sql SqlTable) Filter(pred cm.Predicate) cm.Collection {
 	pred.Apply(&sql)
 	return &sql
 }
 
+// List resolves the collection and applies the results to the given slice pointer
 func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 
 	selectQ := "select " + strings.Join(sql.columns, ", ") + " from " + sql.Table
@@ -170,6 +96,7 @@ func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 	return err
 }
 
+// Single resolves the collection and applies the results to the given slice pointer.
 func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) {
 	selectQ := "select " + strings.Join(sql.columns, ", ") + " from " + sql.Table
 
@@ -181,6 +108,7 @@ func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) 
 	return err
 }
 
+// Delete resolves the collection using the filters and deletes the filtered elements.
 func (sql SqlTable) Delete(ctx context.Context) (err error) {
 	deleteQ := "delete from " + sql.Table
 
@@ -193,7 +121,10 @@ func (sql SqlTable) Delete(ctx context.Context) (err error) {
 	return err
 }
 
+// ExecRaw executes a raw statement against the collection
 func (sql SqlTable) ExecRaw(ctx context.Context, query string) error {
 	_, err := sql.database.Exec(query)
 	return err
 }
+
+// end Collection implementation
