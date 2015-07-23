@@ -42,4 +42,9 @@ func (s SqlValueColumn) Like(caseSensitive bool, i interface{}) cm.Predicate {
 	return &SqlLikePredicate{s, i, caseSensitive}
 }
 
+// Set creates a modify operation
+func (s SqlValueColumn) Set(i interface{}) cm.Operation {
+	return &SqlUpdateOperation{s, i}
+}
+
 // end ValueColumn implementation

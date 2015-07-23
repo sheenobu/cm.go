@@ -298,6 +298,52 @@ func TestLikeFilter(t *testing.T) {
 	}
 }
 
+// TestUpdateAll tests the update function on all items
+func TestUpdateAll(t *testing.T) {
+
+	ctx := context.Background()
+
+	Cars := createCars()
+	err := Cars.Init(Cars)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, model, make, year)
+		values ('1', 'Honda', 'Civic', '1993'),
+	           ('2', 'Toyota', 'Corolla', '1993');
+	`)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	cars := make([]Car, 0)
+
+	err = Cars.Edit(Cars.Model.Set("Whatever")).Update(ctx)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if err = Cars.List(ctx, &cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 2 {
+		t.Errorf("Expected all cars to be of length 2, got %d", i)
+	}
+
+	if len(cars) == 2 {
+		for _, car := range cars {
+			if car.Model != "Whatever" {
+				t.Errorf("Expected all cars to have model of Whatever")
+			}
+		}
+	}
+}
+
 // TestDeleteAll tests the delete function on all items
 func TestDeleteAll(t *testing.T) {
 

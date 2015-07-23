@@ -22,9 +22,8 @@ type ValueColumn interface {
 	// Like returns a predicate that, when applied to a Collection, filters out wildcard matching elements
 	Like(bool, interface{}) Predicate
 
-	/*
-		Set(interface{}) Operation
-	*/
+	// Set returns the operation that, when applied to a collection, updates the elements
+	Set(interface{}) Operation
 }
 
 // Predicate defines a piece of code that
@@ -48,9 +47,9 @@ type Collection interface {
 
 	// Modify Operations
 	Filter(Predicate) Collection
+	Edit(Operation) Collection
 
 	/*
-		Edit(Operation) Collection
 
 		// Entity Operations
 		EntityInsert(context.Context, *interface{}) error
@@ -59,11 +58,9 @@ type Collection interface {
 
 		// Batch Operations
 	*/
-	Delete(context.Context) error
 
-	/*
-		Update(context.Context) error
-	*/
+	Delete(context.Context) error
+	Update(context.Context) error
 
 	// Read Operations
 	List(context.Context, interface{}) error

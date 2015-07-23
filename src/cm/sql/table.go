@@ -19,6 +19,7 @@ type SqlTable struct {
 	database         *sqlx.DB
 	columns          []string
 	filterStatements []string
+	updateStatements []string
 	values           []interface{}
 }
 
@@ -29,6 +30,7 @@ func New(db *sqlx.DB, table string) *SqlTable {
 		database:         db,
 		columns:          make([]string, 0),
 		filterStatements: make([]string, 0),
+		updateStatements: make([]string, 0),
 		values:           make([]interface{}, 0),
 	}
 }
@@ -81,6 +83,12 @@ func (sql SqlTable) Filter(pred cm.Predicate) cm.Collection {
 	return &sql
 }
 
+// Edit updates the collection for the given operation
+func (sql SqlTable) Edit(op cm.Operation) cm.Collection {
+	op.Apply(&sql)
+	return &sql
+}
+
 // List resolves the collection and applies the results to the given slice pointer
 func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 
@@ -116,6 +124,21 @@ func (sql SqlTable) Delete(ctx context.Context) (err error) {
 		_, err = sql.database.Exec(deleteQ)
 	} else {
 		_, err = sql.database.Exec(deleteQ+" where "+strings.Join(sql.filterStatements, " and "), sql.values...)
+	}
+
+	return err
+}
+
+// Update resolves the collection using the filters and updates the filtered elements using the operations
+func (sql SqlTable) Update(ctx context.Context) (err error) {
+	updateQ := "update " + sql.Table + " set "
+
+	updateQ = updateQ + " " + strings.Join(sql.updateStatements, ", ")
+
+	if len(sql.filterStatements) == 0 {
+		_, err = sql.database.Exec(updateQ, sql.values...)
+	} else {
+		_, err = sql.database.Exec(updateQ+" where "+strings.Join(sql.filterStatements, " and "), sql.values...)
 	}
 
 	return err
