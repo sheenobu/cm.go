@@ -27,3 +27,5 @@ persistent collection management for golang
  * Relations
  * Caching
  * Transactions
+ * Pagination
+ * NoSQL drivers
