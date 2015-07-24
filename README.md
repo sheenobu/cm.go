@@ -17,6 +17,7 @@ persistent collection management for golang
  * Updating via filtering
  * Simple schema generation
  * Inserting
+ * Pagination
 
 ## TODO
 
@@ -27,5 +28,4 @@ persistent collection management for golang
  * Relations
  * Caching
  * Transactions
- * Pagination
  * NoSQL drivers

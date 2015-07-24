@@ -119,6 +119,29 @@ func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 	return err
 }
 
+// Page returns a pagination object which is responsible for resolving the collection
+func (sql SqlTable) Page(ctx context.Context, perPageCount int) (cm.Paginator, error) {
+
+	countQ := "select count(" + sql.insColumns[0] + ") from " + sql.Table
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
+
+	if len(sql.filterStatements) != 0 {
+		selectQ = selectQ + " where " + strings.Join(sql.filterStatements, " and ")
+		countQ = countQ + " where " + strings.Join(sql.filterStatements, " and ")
+	}
+
+	sp := SqlPaginator{
+		database:     sql.database,
+		selectQuery:  selectQ,
+		countQuery:   countQ,
+		perPageCount: perPageCount,
+	}
+
+	err := sp.Init(ctx)
+
+	return &sp, err
+}
+
 // Single resolves the collection and applies the results to the given slice pointer.
 func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) {
 	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table

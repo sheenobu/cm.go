@@ -38,6 +38,21 @@ type Operation interface {
 	Apply(c Collection) error
 }
 
+// Paginator defines an object which allows pagination, iteration
+// on a collection
+type Paginator interface {
+	Apply(interface{}) error
+
+	PageCount() int
+	ItemCount() int
+
+	CurrentPage() int
+	PerPageCount() int
+
+	Next() bool
+	Prev() bool
+}
+
 // Collection defines a grouping of related entities that can be
 // operated on.
 type Collection interface {
@@ -65,5 +80,6 @@ type Collection interface {
 
 	// Read Operations
 	List(context.Context, interface{}) error
+	Page(context.Context, int) (Paginator, error)
 	Single(context.Context, interface{}) error
 }
