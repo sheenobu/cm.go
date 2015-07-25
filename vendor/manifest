@@ -2,6 +2,18 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/bmizerany/pat",
+			"repository": "https://github.com/bmizerany/pat",
+			"revision": "b8a35001b773c267eb260a691f4e5499a3531600",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/codegangsta/negroni",
+			"repository": "https://github.com/codegangsta/negroni",
+			"revision": "c7477ad8e330bef55bf1ebe300cf8aa67c492d1b",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/fatih/camelcase",
 			"repository": "https://github.com/fatih/camelcase",
 			"revision": "332844f2fb0193cce955f4687646abbdcc43ceeb",
