@@ -33,7 +33,13 @@ func (p *SqlPaginator) Init(ctx context.Context) (err error) {
 	}
 
 	p.itemCount = count[0]
-	p.pageCount = count[0]/p.perPageCount + 1
+	p.pageCount = count[0] / p.perPageCount
+
+	remaining := count[0] % p.perPageCount
+	if remaining != 0 {
+		p.pageCount++
+	}
+
 	p.currentPage = 0
 
 	return err
@@ -64,7 +70,7 @@ func (p SqlPaginator) PerPageCount() int {
 // Next increases the current page by one, unless the current page
 // is the last page.
 func (p *SqlPaginator) Next() bool {
-	if p.currentPage == p.pageCount {
+	if p.currentPage == p.pageCount-1 {
 		return false
 	}
 

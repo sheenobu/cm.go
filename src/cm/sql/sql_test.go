@@ -573,7 +573,7 @@ func TestInsert(t *testing.T) {
 }
 
 // TestPagination tests the pagination function
-func TestPagination(t *testing.T) {
+func TestPaginationDevideOddly(t *testing.T) {
 	ctx := context.Background()
 
 	Cars := createCars()
@@ -676,11 +676,11 @@ func TestPagination(t *testing.T) {
 		ok = page.Next()
 	}
 
-	if i := len(lengths); i != 6 {
-		t.Errorf("Should have iterated over 6 pages, but iterated over %d", i)
+	if i := len(lengths); i != 5 {
+		t.Errorf("Should have iterated over 5 pages, but iterated over %d", i)
 	}
 
-	if len(lengths) == 6 {
+	if len(lengths) == 5 {
 		if lengths[0] != 3 {
 			t.Errorf("First page should have had 3 items")
 		}
@@ -695,6 +695,122 @@ func TestPagination(t *testing.T) {
 		}
 		if lengths[4] != 2 {
 			t.Errorf("Fifth page should have had 2 items, has %d", lengths[4])
+		}
+	}
+
+}
+
+// TestPagination tests the pagination function
+func TestPaginationDevideEvently(t *testing.T) {
+	ctx := context.Background()
+
+	Cars := createCars()
+	err := Cars.Init(Cars)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, model, make, year)
+		values ('1', 'Honda', 'Accord Gen1', '1976'),
+		('2', 'Honda', 'Accord Gen1', '1977'),
+		('3', 'Honda', 'Accord Gen1', '1978'),
+		('4', 'Honda', 'Accord Gen1', '1979'),
+		('5', 'Honda', 'Accord Gen1', '1980'),
+		('6', 'Honda', 'Accord Gen2', '1981'),
+		('7', 'Honda', 'Accord Gen3', '1982'),
+		('8', 'Honda', 'Accord Gen3', '1983'),
+		('9', 'Honda', 'Accord Gen3', '1984'),
+		('10', 'Honda', 'Accord Gen4', '1985'),
+		('11', 'Honda', 'Accord Gen4', '1986'),
+		('12', 'Honda', 'Accord Gen5', '1987'),
+		('13', 'Honda', 'Accord Gen5', '1988'),
+		('14', 'Honda', 'Accord Gen5', '1989')
+	`)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	page, err := Cars.Page(ctx, 2)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if page == nil {
+		t.Error("Page is empty")
+	}
+
+	if i := page.PageCount(); i != 7 {
+		t.Errorf("Expected page count to be 7, was %d", i)
+	}
+
+	if i := page.CurrentPage(); i != 0 {
+		t.Errorf("Expected initial page to be 0, was %d", i)
+	}
+
+	if ok := page.Prev(); ok {
+		t.Error("Page Previous should have returned false")
+	}
+
+	if ok := page.Next(); !ok {
+		t.Errorf("Page next should have succeeded")
+	}
+
+	if i := page.CurrentPage(); i != 1 {
+		t.Errorf("Expected current page after Next to be 1, was %d", i)
+	}
+
+	cars := make([]Car, 0)
+
+	if err := page.Apply(&cars); err != nil {
+		t.Error(err)
+	}
+
+	if i := len(cars); i != 2 {
+		t.Errorf("Expected car page length to be 2, was %d", i)
+	} else {
+		c0 := cars[0]
+		c1 := cars[1]
+
+		if c0.Year != 1978 {
+			t.Errorf("Expected car year to be 1979, was %d", c0.Year)
+		}
+		if c1.Year != 1979 {
+			t.Errorf("Expected car year to be 1980, was %d", c1.Year)
+		}
+	}
+
+	ok := true
+
+	// reset the pagination
+	for ok {
+		ok = page.Prev()
+	}
+
+	if page.CurrentPage() != 0 {
+		t.Errorf("Current page should have been 0, was %d\n", page.CurrentPage())
+	}
+
+	ok = true
+
+	lengths := make([]int, 0)
+
+	for ok {
+		cars = make([]Car, 0)
+		page.Apply(&cars)
+		lengths = append(lengths, len(cars))
+		ok = page.Next()
+	}
+
+	if i := len(lengths); i != 7 {
+		t.Errorf("Should have iterated over 7  pages, but iterated over %d", i)
+	}
+
+	for idx, i := range lengths {
+		if i != 2 {
+			t.Errorf("Page %d should have had 2 items, had %d", idx, i)
 		}
 	}
 
