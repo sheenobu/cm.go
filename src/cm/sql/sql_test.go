@@ -12,7 +12,7 @@ import (
 
 // Car defines the model object we are using.
 type Car struct {
-	PrimaryKey string
+	PrimaryKey string // BUG CM01
 	CarMake    string
 	Model      string
 	Year       int64
