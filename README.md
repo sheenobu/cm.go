@@ -112,8 +112,8 @@ main.go:
  * Raw Query API
  * Remove reflection code.
  * Remove/Replace build tool to support importing from other projects.
- * Higher level column types (sql.VarChar, sql.Integer, sql.DateTime)
- * Nullable column types
+ * Higher level column types ( [DONE] sql.VarChar, sql.Integer, sql.DateTime)
+ * [DONE] Nullable column types
  * Automatic ID generation
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity

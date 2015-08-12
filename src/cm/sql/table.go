@@ -60,9 +60,9 @@ func (sql *SqlTable) Init(iface interface{}) error {
 
 		if f.Type().Name() == "ValueColumn" {
 
-			vc := f.Interface().(cm.ValueColumn)
+			vc := f.Interface().(SqlValueColumn)
 
-			columns = append(columns, vc.Name()+" "+vc.Type())
+			columns = append(columns, vc.Build())
 
 			cs := camelcase.Split(fx.Name)
 

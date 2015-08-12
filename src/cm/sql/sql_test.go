@@ -34,9 +34,9 @@ func createCars() *_Cars {
 	return &_Cars{
 		Collection: New(db, "CARS"),
 		PrimaryKey: Column("id", "integer primary key"),
-		CarMake:    Column("make", "varchar(100) not null"),
-		Model:      Column("model", "varchar(100) not null"),
-		Year:       Column("year", "number not null"),
+		CarMake:    Varchar("make", 100).NotNull(),
+		Model:      Varchar("model", 100).NotNull(),
+		Year:       Column("year", "number").NotNull(),
 	}
 }
 
