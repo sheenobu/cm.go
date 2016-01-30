@@ -4,11 +4,8 @@ persistent collection management for golang
 
 ## Get
 
-
-
 	go get github.com/sheenobu/cm.go
 	go get github.com/sheenobu/cm.go/sql
-
 
 ## Usage
 
