@@ -2,6 +2,14 @@
 
 persistent collection management for golang
 
+## Get
+
+
+
+	go get github.com/sheenobu/cm.go
+	go get github.com/sheenobu/cm.go/sql
+
+
 ## Usage
 
 albums/albums.go:
@@ -9,10 +17,8 @@ albums/albums.go:
 	package albums
 
 	import (
-		"cm"
-		"cm/sql"
+		"github.com/sheenobu/cm.go"
 	)
-
 
 	// Album defines the model for the music album
 	type Album struct {
@@ -33,13 +39,19 @@ albums/albums.go:
 		Explicit   cm.ValueColumn
 	}
 
+albums/albums_sqlite.go:
+	
+	import (
+		"github.com/sheenobu/cm.go/sql"
+	)
+
 	var Collection *_Albums
 
 	func init() {
 		db, _ := sqlx.Connect("sqlite3", "albums.db")
 		Collection = &_Albums{
-			Collection: New(db, "ALBUMS"),
-			Id: sql.Column("id", "integer primary key"),
+			Collection:     New(db, "ALBUMS"),
+			Id:             sql.Column("id", "integer primary key"),
 			Artist: 	    sql.Column("artist", "varchar(100) not null"),
 			Name:      		sql.Column("name", "varchar(100) not null"),
 			Year:       	sql.Column("year", "number not null"),
@@ -109,11 +121,15 @@ main.go:
 
 ## TODO
 
+ * [DONE] Nullable column types
+ * [DONE] Remove/Replace build tool to support importing from other projects.
+ * [DONE] sql.Varchar
+ * [DONE] In-place updates: c.Edit(c.MyColumn.Set("value"))
+ * Use go generate to merge in www assets into demo binary
+ * sql.Integer
+ * sql.DateTime
  * Raw Query API
  * Remove reflection code.
- * Remove/Replace build tool to support importing from other projects.
- * Higher level column types ( [DONE] sql.VarChar, sql.Integer, sql.DateTime)
- * [DONE] Nullable column types
  * Automatic ID generation
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity
@@ -122,8 +138,7 @@ main.go:
  * Caching
  * Transactions
  * In-place updates:
-	* c.Edit(c.MyColumn.Set("value")) - DONE
-	* c.Edit(c.MyColumn.Append("\_appended\_string") - TODO
+    * c.Edit(c.MyColumn.Append("\_appended\_string") - TODO
 	* c.Edit(c.MyIntegerColumn.Add(1)) - TODO
 	* c.Edit(c.MyColumn.SetFunc(fn)) - TODO
 
