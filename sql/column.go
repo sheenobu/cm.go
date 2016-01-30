@@ -24,6 +24,23 @@ func Varchar(name string, size int) SqlValueColumn {
 		fmt.Sprintf("varchar(%d)", size))
 }
 
+// Integer returns an integer given the size
+func Integer(name string, size int) SqlValueColumn {
+	//TODO: make size a specific flag (BIGINT, SMALLINT, etc)
+	return Column(name,
+		fmt.Sprintf("integer"))
+}
+
+func (c SqlValueColumn) PrimaryKey() SqlValueColumn {
+	c.ctype = c.ctype + " PRIMARY KEY "
+	return c
+}
+
+func (c SqlValueColumn) AutoIncrement() SqlValueColumn {
+	c.ctype = c.ctype + " AUTOINCREMENT "
+	return c
+}
+
 // NotNull returns a column object that does not allow null values
 func (c SqlValueColumn) NotNull() SqlValueColumn {
 	c.null = false

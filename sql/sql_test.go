@@ -13,19 +13,19 @@ import (
 
 // Car defines the model object we are using.
 type Car struct {
-	PrimaryKey string // BUG CM01
-	CarMake    string
-	Model      string
-	Year       int64
+	ID      string // BUG CM01
+	CarMake string
+	Model   string
+	Year    int64
 }
 
 // _Cars is the collection for the model.
 type _Cars struct {
 	cm.Collection
-	PrimaryKey cm.ValueColumn
-	CarMake    cm.ValueColumn
-	Model      cm.ValueColumn
-	Year       cm.ValueColumn
+	ID      cm.ValueColumn
+	CarMake cm.ValueColumn
+	Model   cm.ValueColumn
+	Year    cm.ValueColumn
 }
 
 // createCars resets the database and initializes the cars structure
@@ -34,7 +34,7 @@ func createCars() *_Cars {
 	db, _ := sqlx.Connect("sqlite3", "cars.db")
 	return &_Cars{
 		Collection: New(db, "CARS"),
-		PrimaryKey: Column("id", "integer primary key"),
+		ID:         Integer("id", 10).PrimaryKey().AutoIncrement(),
 		CarMake:    Varchar("make", 100).NotNull(),
 		Model:      Varchar("model", 100).NotNull(),
 		Year:       Column("year", "number").NotNull(),
@@ -110,7 +110,7 @@ func TestAll(t *testing.T) {
 		return
 	}
 
-	if s := cars[0].PrimaryKey; s != "1" {
+	if s := cars[0].ID; s != "1" {
 		t.Errorf("Expected cars.Id to be 1, got %s", s)
 	}
 }
@@ -567,8 +567,8 @@ func TestInsert(t *testing.T) {
 		if cars[0].Model == "Honda" {
 			t.Errorf("Expected remaining car to be Honda, was %s", cars[0].Model)
 		}
-		if cars[0].PrimaryKey == "" {
-			t.Errorf("No PrimaryKey on car")
+		if cars[0].ID == "" {
+			t.Errorf("No ID on car")
 		}
 	}
 }

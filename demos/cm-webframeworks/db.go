@@ -28,7 +28,7 @@ func initDb() {
 	// We initialize the collection using a SQL based backend
 	Frameworks = &_Frameworks{
 		Collection:  sql.New(db, "frameworks"),
-		Id:          sql.Column("id", "integer primary key AUTOINCREMENT"), // Should be abstracted out to a sql.PrimaryKeyInteger
+		Id:          sql.Integer("id", 10).PrimaryKey(),
 		Name:        sql.Varchar("name", 100).NotNull(),
 		Description: sql.Varchar("description", 100).NotNull(),
 		Url:         sql.Varchar("url", 100).NotNull(),

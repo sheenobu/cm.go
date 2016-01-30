@@ -19,7 +19,7 @@ albums/albums.go:
 
 	// Album defines the model for the music album
 	type Album struct {
-		Id string // BUG CM01
+		Id         string // BUG CM01
 		Artist 	   string
 		Name 	   string
 		Explicit   bool
@@ -48,9 +48,9 @@ albums/albums_sqlite.go:
 		db, _ := sqlx.Connect("sqlite3", "albums.db")
 		Collection = &_Albums{
 			Collection:     New(db, "ALBUMS"),
-			Id:             sql.Column("id", "integer primary key"),
-			Artist: 	    sql.Column("artist", "varchar(100) not null"),
-			Name:      		sql.Column("name", "varchar(100) not null"),
+			Id:             sql.Integer().PrimaryKey(),
+			Artist: 	    sql.Varchar("artist", 100).NotNull(),
+			Name:      		sql.Varchar("name", 100).NotNull(),
 			Year:       	sql.Column("year", "number not null"),
 			Explicit:  		sql.Column("explicit", "bool not null default false"),
 		}
@@ -123,11 +123,12 @@ main.go:
  * [DONE] sql.Varchar
  * [DONE] In-place updates: c.Edit(c.MyColumn.Set("value"))
  * [DONE] Point to $GOPATH/../www for demo file root
- * sql.Integer
+ * [DONE] sql.Integer
+ * [DONE] PrimaryKey, AutoIncrement builder functions
  * sql.DateTime
  * Raw Query API
  * Remove reflection code.
- * Automatic ID generation
+ * Automatic ID generation via function
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity
  * Database Versioning

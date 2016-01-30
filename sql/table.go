@@ -74,11 +74,13 @@ func (sql *SqlTable) Init(iface interface{}) error {
 			sql.asColumns = append(sql.asColumns,
 				vc.Name()+" as "+strings.ToLower(fx.Name))
 
-			sql.insColumns = append(sql.insColumns,
-				vc.Name())
+			if !strings.Contains(vc.Type(), "AUTOINCREMENT") {
+				sql.insColumns = append(sql.insColumns,
+					vc.Name())
 
-			sql.namedColumns = append(sql.namedColumns,
-				":"+strings.ToLower(fx.Name))
+				sql.namedColumns = append(sql.namedColumns,
+					":"+strings.ToLower(fx.Name))
+			}
 
 		}
 	}
