@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"encoding/json"
 	"net/http"
@@ -24,8 +25,11 @@ func initHttp() {
 	n := negroni.New()
 	n.UseHandler(mux)
 
+	gopath := os.Getenv("GOPATH")
+	www := "/src/github.com/sheenobu/cm.go/demos/cm-webframeworks/www"
+
 	mux.Handle("/api/", router)
-	mux.Handle("/", http.FileServer(http.Dir("src/demos/webframeworks/www")))
+	mux.Handle("/", http.FileServer(http.Dir(gopath+www)))
 
 	router.Get("/api/frameworks/:id", http.HandlerFunc(frameworkGet))
 	router.Del("/api/frameworks/:id", http.HandlerFunc(frameworkDelete))

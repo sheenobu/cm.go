@@ -122,7 +122,7 @@ main.go:
  * [DONE] Remove/Replace build tool to support importing from other projects.
  * [DONE] sql.Varchar
  * [DONE] In-place updates: c.Edit(c.MyColumn.Set("value"))
- * Use go generate to merge in www assets into demo binary
+ * [DONE] Point to $GOPATH/../www for demo file root
  * sql.Integer
  * sql.DateTime
  * Raw Query API
