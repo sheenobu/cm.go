@@ -1,10 +1,10 @@
 package main
 
 import (
-	"cm"
-	"cm/sql"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/sheenobu/cm.go"
+	"github.com/sheenobu/cm.go/sql"
 )
 
 // _Frameworks defines the collection for the Framework entity

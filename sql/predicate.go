@@ -1,8 +1,9 @@
 package sql
 
 import (
-	"cm"
 	"fmt"
+
+	"github.com/sheenobu/cm.go"
 )
 
 // SqlEqPredicate is the predicate which wraps a SQL equal comparison

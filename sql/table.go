@@ -2,14 +2,15 @@ package sql
 
 import (
 	"fmt"
-	"github.com/fatih/camelcase"
-	"github.com/jmoiron/sqlx"
 	"strings"
 
-	"golang.org/x/net/context"
+	"github.com/fatih/camelcase"
+	"github.com/jmoiron/sqlx"
+	"github.com/sheenobu/cm.go"
+
 	"reflect"
 
-	"cm"
+	"golang.org/x/net/context"
 )
 
 // SqlTable defines the Collection that interacts with a sqlx.DB connection

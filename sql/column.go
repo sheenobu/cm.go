@@ -1,8 +1,9 @@
 package sql
 
 import (
-	"cm"
 	"fmt"
+
+	"github.com/sheenobu/cm.go"
 )
 
 // SqlValueColumn is a value column that contains metadata about the database column

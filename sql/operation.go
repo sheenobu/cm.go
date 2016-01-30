@@ -1,8 +1,9 @@
 package sql
 
 import (
-	"cm"
 	"fmt"
+
+	"github.com/sheenobu/cm.go"
 )
 
 // SqlUpdateOperation is the predicate which wraps a SQL update operation
