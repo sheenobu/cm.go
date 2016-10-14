@@ -140,6 +140,3 @@ main.go:
 	* c.Edit(c.MyIntegerColumn.Add(1)) - TODO
 	* c.Edit(c.MyColumn.SetFunc(fn)) - TODO
 
-## Bugs
-
- * CM01 - AUTO INCREMENT columns must be string type, otherwise the system attempts to insert a 0 for every row.

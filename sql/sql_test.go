@@ -13,7 +13,7 @@ import (
 
 // Car defines the model object we are using.
 type Car struct {
-	ID      string // BUG CM01
+	ID      *int
 	CarMake string
 	Model   string
 	Year    int64
@@ -110,8 +110,8 @@ func TestAll(t *testing.T) {
 		return
 	}
 
-	if s := cars[0].ID; s != "1" {
-		t.Errorf("Expected cars.Id to be 1, got %s", s)
+	if s := cars[0].ID; *s != 1 {
+		t.Errorf("Expected cars.Id to be 1, got %v", *s)
 	}
 }
 
@@ -567,7 +567,7 @@ func TestInsert(t *testing.T) {
 		if cars[0].Model == "Honda" {
 			t.Errorf("Expected remaining car to be Honda, was %s", cars[0].Model)
 		}
-		if cars[0].ID == "" {
+		if cars[0].ID == nil {
 			t.Errorf("No ID on car")
 		}
 	}
