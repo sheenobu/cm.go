@@ -71,18 +71,24 @@ func (p Paginator) PerPageCount() int {
 // Next increases the current page by one, unless the current page
 // is the last page.
 func (p *Paginator) Next() bool {
-	if p.currentPage == p.pageCount-1 {
+	if p.currentPage >= p.pageCount-1 {
+		p.currentPage = p.pageCount - 1
+		if p.currentPage < 0 {
+			p.currentPage = 0
+		}
 		return false
 	}
 
 	p.currentPage++
+
 	return true
 }
 
 // Prev decreases the current page by one, unless the current page
 // is 0
 func (p *Paginator) Prev() bool {
-	if p.currentPage == 0 {
+	if p.currentPage <= 0 {
+		p.currentPage = 0
 		return false
 	}
 

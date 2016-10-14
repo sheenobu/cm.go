@@ -1,3 +1,5 @@
+<!-- vim: syntax=markdown
+-->
 # cm.go
 
 persistent collection management for golang
@@ -42,6 +44,7 @@ main.go:
  * Simple schema generation
  * Inserting
  * Pagination
+ * Automatic column generation on insert
 
 ## TODO
 
@@ -52,10 +55,10 @@ main.go:
  * [DONE] Point to $GOPATH/../www for demo file root
  * [DONE] sql.Integer
  * [DONE] PrimaryKey, AutoIncrement builder functions
+ * [DONE] Automatic ID generation via function
  * sql.DateTime
  * Raw Query API
  * Remove reflection code.
- * Automatic ID generation via function
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity
  * Database Versioning

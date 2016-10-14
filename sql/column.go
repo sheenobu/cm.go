@@ -11,11 +11,12 @@ type ValueColumn struct {
 	name  string
 	ctype string
 	null  bool
+	fns   map[string]func() interface{}
 }
 
 // Column returns a column object given the name and type
 func Column(name string, ctype string) ValueColumn {
-	return ValueColumn{name, ctype, true}
+	return ValueColumn{name, ctype, true, make(map[string]func() interface{})}
 }
 
 // Varchar returns a column object given the name and size of string
@@ -34,6 +35,13 @@ func Integer(name string, size int) ValueColumn {
 // PrimaryKey returns a value column that is a primary key
 func (c ValueColumn) PrimaryKey() ValueColumn {
 	c.ctype = c.ctype + " PRIMARY KEY "
+	return c
+}
+
+// FromFunction returns a value column that is populated, on insert, from
+// the given function
+func (c ValueColumn) FromFunction(fn func() interface{}) ValueColumn {
+	c.fns["insert"] = fn
 	return c
 }
 

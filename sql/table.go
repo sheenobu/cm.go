@@ -17,10 +17,13 @@ import (
 type Table struct {
 	Name string
 
-	database     *sqlx.DB
-	asColumns    []string
-	insColumns   []string
-	namedColumns []string
+	database      *sqlx.DB
+	asColumnTypes []ValueColumn
+	asColumns     []string
+	insColumns    []string
+	namedColumns  []string
+
+	offset int
 
 	filterStatements []string
 	updateStatements []string
@@ -33,15 +36,6 @@ func New(db *sqlx.DB, table string) *Table {
 	return &Table{
 		Name:     table,
 		database: db,
-
-		asColumns:    make([]string, 0),
-		insColumns:   make([]string, 0),
-		namedColumns: make([]string, 0),
-
-		filterStatements: make([]string, 0),
-		updateStatements: make([]string, 0),
-		updateValues:     make([]interface{}, 0),
-		filterValues:     make([]interface{}, 0),
 	}
 }
 
@@ -71,6 +65,7 @@ func (sql *Table) Init(iface interface{}) error {
 				cs[i] = strings.ToLower(cs[i])
 			}
 
+			sql.asColumnTypes = append(sql.asColumnTypes, vc)
 			sql.asColumns = append(sql.asColumns,
 				vc.Name()+" as "+strings.ToLower(fx.Name))
 
@@ -80,6 +75,8 @@ func (sql *Table) Init(iface interface{}) error {
 
 				sql.namedColumns = append(sql.namedColumns,
 					":"+strings.ToLower(fx.Name))
+			} else {
+				sql.offset++
 			}
 
 		}
@@ -125,7 +122,7 @@ func (sql Table) List(ctx context.Context, list interface{}) (err error) {
 // Page returns a pagination object which is responsible for resolving the collection
 func (sql Table) Page(ctx context.Context, perPageCount int) (cm.Paginator, error) {
 
-	countQ := "select count(" + sql.insColumns[0] + ") from " + sql.Name
+	countQ := "select count(" + sql.asColumnTypes[0].name + ") from " + sql.Name
 	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Name
 
 	if len(sql.filterStatements) != 0 {
@@ -198,7 +195,17 @@ func (sql Table) Insert(ctx context.Context, i interface{}) (err error) {
 
 	var arg2 []interface{}
 
-	for _, a := range args {
+	for idx, a := range args {
+
+		vc := sql.asColumnTypes[idx+sql.offset]
+		if ins, ok := vc.fns["insert"]; ok && ins != nil {
+			b := ins()
+			if b != nil {
+				arg2 = append(arg2, b)
+				continue
+			}
+		}
+
 		if s, ok := a.(string); ok && s == "" {
 			arg2 = append(arg2, nil)
 		} else {

@@ -1,4 +1,6 @@
 <!-- DO NOT EDIT Generated via template -->
+<!-- vim: syntax=markdown
+-->
 # cm.go
 
 persistent collection management for golang
@@ -52,11 +54,13 @@ func init() {
 	db, _ := sqlx.Connect("sqlite3", "albums.db")
 	Collection = &_Albums{
 		Collection: New(db, "ALBUMS"),
-		ID:         sql.Integer().PrimaryKey(),
-		Artist:     sql.Varchar("artist", 100).NotNull(),
-		Name:       sql.Varchar("name", 100).NotNull(),
-		Year:       sql.Column("year", "number not null"),
-		Explicit:   sql.Column("explicit", "bool not null default false"),
+		//ID:		sql.Varchar("id", 32).PrimaryKey().FromFunction(uuidGen)
+
+		ID:       sql.Integer().PrimaryKey(),
+		Artist:   sql.Varchar("artist", 100).NotNull(),
+		Name:     sql.Varchar("name", 100).NotNull(),
+		Year:     sql.Column("year", "number not null"),
+		Explicit: sql.Column("explicit", "bool not null default false"),
 	}
 	err := Collection.Init(Collection)
 }
@@ -121,6 +125,7 @@ func main() {
  * Simple schema generation
  * Inserting
  * Pagination
+ * Automatic column generation on insert
 
 ## TODO
 
@@ -131,10 +136,10 @@ func main() {
  * [DONE] Point to $GOPATH/../www for demo file root
  * [DONE] sql.Integer
  * [DONE] PrimaryKey, AutoIncrement builder functions
+ * [DONE] Automatic ID generation via function
  * sql.DateTime
  * Raw Query API
  * Remove reflection code.
- * Automatic ID generation via function
  * Updating by entity (Not sure if we want to support this)
  * Deleting by entity
  * Database Versioning

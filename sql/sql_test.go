@@ -14,6 +14,7 @@ import (
 // Car defines the model object we are using.
 type Car struct {
 	ID      *int
+	Slug    *string
 	CarMake string
 	Model   string
 	Year    int64
@@ -23,9 +24,14 @@ type Car struct {
 type _Cars struct {
 	cm.Collection
 	ID      cm.ValueColumn
+	Slug    cm.ValueColumn
 	CarMake cm.ValueColumn
 	Model   cm.ValueColumn
 	Year    cm.ValueColumn
+}
+
+func constant() interface{} {
+	return "hello"
 }
 
 // createCars resets the database and initializes the cars structure
@@ -35,6 +41,7 @@ func createCars() *_Cars {
 	return &_Cars{
 		Collection: New(db, "CARS"),
 		ID:         Integer("id", 10).PrimaryKey().AutoIncrement(),
+		Slug:       Varchar("slug", 32).FromFunction(constant),
 		CarMake:    Varchar("make", 100).NotNull(),
 		Model:      Varchar("model", 100).NotNull(),
 		Year:       Column("year", "number").NotNull(),
@@ -127,9 +134,9 @@ func TestEqFilter(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, model, make, year)
-		values ('1', 'Honda', 'Civic', '1993'),
-	           ('2', 'Toyota', 'Corolla', '1993');
+	err = Cars.ExecRaw(context.Background(), `insert into CARS (id, slug, model, make, year)
+		values ('1', '', 'Honda', 'Civic', '1993'),
+	           ('2', '', 'Toyota', 'Corolla', '1993');
 	`)
 
 	if err != nil {
@@ -564,11 +571,18 @@ func TestInsert(t *testing.T) {
 	}
 
 	if len(cars) == 1 {
-		if cars[0].Model == "Honda" {
-			t.Errorf("Expected remaining car to be Honda, was %s", cars[0].Model)
+		if cars[0].Model != "Civic" {
+			t.Errorf("Expected remaining car to be Civic, was %s", cars[0].Model)
 		}
 		if cars[0].ID == nil {
 			t.Errorf("No ID on car")
+		}
+		if cars[0].Slug != nil {
+			if *(cars[0].Slug) != "hello" {
+				t.Errorf("Expected remaining car slug to be 'hello', was %s", *cars[0].Slug)
+			}
+		} else {
+			t.Errorf("Expected slug to be non-nil, was nil")
 		}
 	}
 }
@@ -598,7 +612,7 @@ func TestPaginationDevideOddly(t *testing.T) {
 		('11', 'Honda', 'Accord Gen4', '1986'),
 		('12', 'Honda', 'Accord Gen5', '1987'),
 		('13', 'Honda', 'Accord Gen5', '1988'),
-		('14', 'Honda', 'Accord Gen5', '1989')
+		('14', 'Honda', 'Accord Gen5', '1989');
 	`)
 
 	if err != nil {
@@ -661,20 +675,31 @@ func TestPaginationDevideOddly(t *testing.T) {
 
 	ok := true
 
+	var i = 0
+
 	// reset the pagination
-	for ok {
+	for ok && i < 100 {
 		ok = page.Prev()
+		i++
+	}
+	if i >= 100 {
+		t.Errorf("page.Prev() continuously ran")
 	}
 
 	ok = true
 
 	var lengths []int
 
-	for ok {
+	i = 0
+	for ok && i < 100 {
 		cars = make([]Car, 0)
 		page.Apply(&cars)
 		lengths = append(lengths, len(cars))
 		ok = page.Next()
+		i++
+	}
+	if i >= 100 {
+		t.Errorf("page.Prev() continuously ran")
 	}
 
 	if i := len(lengths); i != 5 {
@@ -701,8 +726,8 @@ func TestPaginationDevideOddly(t *testing.T) {
 
 }
 
-// TestPagination tests the pagination function
-func TestPaginationDevideEvently(t *testing.T) {
+// TestPaginationDivideEvenly tests the pagination function
+func TestPaginationDivideEvenly(t *testing.T) {
 	ctx := context.Background()
 
 	Cars := createCars()
@@ -785,9 +810,14 @@ func TestPaginationDevideEvently(t *testing.T) {
 
 	ok := true
 
+	var i = 0
 	// reset the pagination
-	for ok {
+	for ok && i < 100 {
 		ok = page.Prev()
+		i++
+	}
+	if i >= 100 {
+		t.Errorf("page.prev never stopped looping")
 	}
 
 	if page.CurrentPage() != 0 {
@@ -798,11 +828,16 @@ func TestPaginationDevideEvently(t *testing.T) {
 
 	var lengths []int
 
-	for ok {
+	i = 0
+	for ok && i < 100 {
 		cars = make([]Car, 0)
 		page.Apply(&cars)
 		lengths = append(lengths, len(cars))
 		ok = page.Next()
+		i++
+	}
+	if i >= 100 {
+		t.Errorf("page.prev never stopped looping")
 	}
 
 	if i := len(lengths); i != 7 {
