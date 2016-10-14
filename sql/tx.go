@@ -37,5 +37,5 @@ func (t *Transaction) Rollback() error {
 
 // Active returns true if the transaction is active
 func (t *Transaction) Active() bool {
-	return t.tx == nil
+	return t.tx != nil
 }

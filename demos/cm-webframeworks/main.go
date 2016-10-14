@@ -14,7 +14,7 @@ func main() {
 
 	err := run()
 	if err != nil {
-		fmt.Printf("Error: '%v'", err)
+		fmt.Printf("Error: '%v'\n", err)
 		os.Exit(1)
 	}
 
@@ -25,10 +25,12 @@ func run() (err error) {
 	var ctx = context.Background()
 
 	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		} else {
-			tx.Commit(ctx)
+		if tx.Active(ctx) {
+			if err != nil {
+				tx.Rollback(ctx)
+			} else {
+				tx.Commit(ctx)
+			}
 		}
 	}()
 
@@ -62,9 +64,11 @@ func run() (err error) {
 
 	}
 
-	tx.Commit(ctx)
+	if err = tx.Commit(ctx); err != nil {
+		return
+	}
 
-	initHTTP()
+	err = initHTTP()
 
 	return
 }

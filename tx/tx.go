@@ -16,6 +16,16 @@ func Supports(col cm.Collection) bool {
 	return ok
 }
 
+// Active returns true if the context has an active transaction
+func Active(ctx context.Context) bool {
+	tx, ok := Get(ctx)
+	if !ok || tx == nil {
+		return false
+	}
+
+	return tx.Active()
+}
+
 // Begin attemps to start a transaction for the
 // given collection
 func Begin(ctx context.Context, col cm.Collection) (context.Context, error) {
