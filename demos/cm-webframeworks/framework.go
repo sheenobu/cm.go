@@ -5,5 +5,5 @@ type Framework struct {
 	ID          *int
 	Name        string
 	Description string
-	Url         string
+	URL         string
 }

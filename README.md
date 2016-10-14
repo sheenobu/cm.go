@@ -36,8 +36,8 @@ albums/albums.go:
 		Explicit   cm.ValueColumn
 	}
 
-albums/albums_sqlite.go:
-	
+albums/albums\_sqlite.go:
+
 	import (
 		"github.com/sheenobu/cm.go/sql"
 	)

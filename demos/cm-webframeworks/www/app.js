@@ -6,7 +6,7 @@ var FrameworkRow = React.createClass({
 		if (desc.length > 100) {
 			desc = desc.substr(0,100) + "..."
 		}
-		var onClick = this.props.onFrameworkDelete.bind(this, this.props.data.Id);
+		var onClick = this.props.onFrameworkDelete.bind(this, this.props.data.ID);
 		var classNames = "btn-floating btn-small waves-effect secondary-content waves-light red";
 		return (
 			<li className="collection-item avatar">
@@ -91,7 +91,7 @@ var FrameworkTable = React.createClass({
 		var self = this;
 		var nodes = this.props.data.Frameworks.map(function(row) {
 			return (
-				<FrameworkRow key={row.Id} data={row} onFrameworkDelete={self.props.onFrameworkDelete} />
+				<FrameworkRow key={row.ID} data={row} onFrameworkDelete={self.props.onFrameworkDelete} />
 			);
 		});
 		return (
@@ -140,9 +140,9 @@ var Frameworks = React.createClass({
 		  }.bind(this)
 		});
 	},
-	handleFrameworkDelete: function(frameworkId) {
+	handleFrameworkDelete: function(frameworkID) {
 		$.ajax({
-		  url: this.props.url + "/" + frameworkId,
+		  url: this.props.url + "/" + frameworkID,
 		  dataType: 'json',
 		  type: 'DELETE',
 		  success: function(data) {
