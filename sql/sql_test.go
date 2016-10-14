@@ -651,7 +651,7 @@ func TestPaginationDevideOddly(t *testing.T) {
 
 	var cars []Car
 
-	if err := page.Apply(&cars); err != nil {
+	if err := page.Apply(ctx, &cars); err != nil {
 		t.Error(err)
 	}
 
@@ -693,7 +693,7 @@ func TestPaginationDevideOddly(t *testing.T) {
 	i = 0
 	for ok && i < 100 {
 		cars = make([]Car, 0)
-		page.Apply(&cars)
+		page.Apply(ctx, &cars)
 		lengths = append(lengths, len(cars))
 		ok = page.Next()
 		i++
@@ -790,7 +790,7 @@ func TestPaginationDivideEvenly(t *testing.T) {
 
 	var cars []Car
 
-	if err := page.Apply(&cars); err != nil {
+	if err := page.Apply(ctx, &cars); err != nil {
 		t.Error(err)
 	}
 
@@ -831,7 +831,7 @@ func TestPaginationDivideEvenly(t *testing.T) {
 	i = 0
 	for ok && i < 100 {
 		cars = make([]Car, 0)
-		page.Apply(&cars)
+		page.Apply(ctx, &cars)
 		lengths = append(lengths, len(cars))
 		ok = page.Next()
 		i++

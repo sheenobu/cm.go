@@ -21,7 +21,7 @@ var router = pat.New()
 
 // initHTTP starts up the various routers for hosting our static web interface
 // and the API to our datamodel.
-func initHTTP() {
+func initHTTP() error {
 	n := negroni.New()
 	n.UseHandler(mux)
 
@@ -42,8 +42,10 @@ func initHTTP() {
 	fmt.Printf("listening on port 8888\n")
 	err := http.ListenAndServe(":8888", n)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 // infoRoute simply returns OK

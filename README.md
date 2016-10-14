@@ -126,6 +126,7 @@ func main() {
  * Inserting
  * Pagination
  * Automatic column generation on insert
+ * (Optional) Transactions
 
 ## TODO
 
@@ -137,6 +138,7 @@ func main() {
  * [DONE] sql.Integer
  * [DONE] PrimaryKey, AutoIncrement builder functions
  * [DONE] Automatic ID generation via function
+ * [DONE] Transactions
  * sql.DateTime
  * Raw Query API
  * Remove reflection code.
@@ -145,7 +147,6 @@ func main() {
  * Database Versioning
  * Relations / SQL joins
  * Caching
- * Transactions
  * In-place updates:
     * c.Edit(c.MyColumn.Append("\_appended\_string") - TODO
 	* c.Edit(c.MyIntegerColumn.Add(1)) - TODO

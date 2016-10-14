@@ -49,22 +49,22 @@ func (p *Paginator) Init(ctx context.Context) (err error) {
 // begin cm.Paginator implementation
 
 // PageCount returns the number of pages of this paginator
-func (p Paginator) PageCount() int {
+func (p *Paginator) PageCount() int {
 	return p.pageCount
 }
 
 // CurrentPage returns the current page of the pagintor
-func (p Paginator) CurrentPage() int {
+func (p *Paginator) CurrentPage() int {
 	return p.currentPage
 }
 
 // ItemCount returns the totel item count of the paginator
-func (p Paginator) ItemCount() int {
+func (p *Paginator) ItemCount() int {
 	return p.itemCount
 }
 
 // PerPageCount returns the per-page count of the pagintor
-func (p Paginator) PerPageCount() int {
+func (p *Paginator) PerPageCount() int {
 	return p.perPageCount
 }
 
@@ -98,9 +98,10 @@ func (p *Paginator) Prev() bool {
 
 // Apply runs the paginating query against the database, inserting it into the
 // given list
-func (p Paginator) Apply(list interface{}) (err error) {
+func (p *Paginator) Apply(ctx context.Context, list interface{}) (err error) {
+	db := getDb(ctx, p.database)
 	q := p.selectQuery + " limit " + strconv.Itoa(p.perPageCount) + " offset " + strconv.Itoa(p.currentPage*p.perPageCount)
-	err = p.database.Select(list, q, p.parent.filterValues...)
+	err = db.Select(list, q, p.parent.filterValues...)
 	return err
 }
 

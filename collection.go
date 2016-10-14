@@ -41,7 +41,7 @@ type Operation interface {
 // Paginator defines an object which allows pagination, iteration
 // on a collection
 type Paginator interface {
-	Apply(interface{}) error
+	Apply(context.Context, interface{}) error
 
 	PageCount() int
 	ItemCount() int
@@ -82,4 +82,20 @@ type Collection interface {
 	List(context.Context, interface{}) error
 	Page(context.Context, int) (Paginator, error)
 	Single(context.Context, interface{}) error
+
+	// C returns the internal composite type, if it exists. Nil otherwise
+	C() Collection
+}
+
+// Transactioner marks a collection as something that
+// can support starting of transactions.
+type Transactioner interface {
+	BeginTx() (Transaction, error)
+}
+
+// A Transaction is a unit of work against a database
+type Transaction interface {
+	Commit() error
+	Rollback() error
+	Active() bool
 }
