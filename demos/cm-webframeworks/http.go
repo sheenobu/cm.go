@@ -39,12 +39,7 @@ func initHTTP() error {
 	router.Get("/api/", http.HandlerFunc(infoRoute))
 
 	fmt.Printf("listening on port 8888\n")
-	err := http.ListenAndServe(":8888", n)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return http.ListenAndServe(":8888", n)
 }
 
 // infoRoute simply returns OK

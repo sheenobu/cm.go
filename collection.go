@@ -3,7 +3,7 @@ package cm
 import "context"
 
 // Collection defines a grouping of related entities that can be
-// operated on.
+// created, searched, filtered, updated, and deleted.
 type Collection interface {
 	Init(interface{}) error
 

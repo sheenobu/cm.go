@@ -2,7 +2,21 @@
 -->
 # cm.go
 
-persistent collection management for golang
+persistent collection management for golang, via declarative structs.
+
+A few of the benifits of this approach are:
+
+Separate model struct from persistence logic via a 'Collection structure':
+
+```go
+{{ shell "tail -n+5 ./albums/albums_single.go" }}
+```
+
+DSL for operating on these structures:
+
+```go
+{{ shell "tail -n+2 ./albums/albums_dsl.go" }}
+```
 
 ## Get
 

@@ -3,7 +3,34 @@
 -->
 # cm.go
 
-persistent collection management for golang
+persistent collection management for golang, via declarative structs.
+
+A few of the benifits of this approach are:
+
+Separate model struct from persistence logic via a 'Collection structure':
+
+```go
+import cm "github.com/sheenobu/cm.go"
+
+var Albums AlbumsCollection
+
+type AlbumsCollection struct {
+	cm.Collection
+	ID       cm.ValueColumn
+	Artist   cm.ValueColumn
+	Name     cm.ValueColumn
+	Year     cm.ValueColumn
+	Explicit cm.ValueColumn
+}
+```
+
+DSL for operating on these structures:
+
+```go
+// Querying for all released in the year 2011
+var albumList []albums.Album
+err = Albums.Filter(Albums.Year.Eq(2011)).List(ctx, &albumList)
+```
 
 ## Get
 
@@ -15,11 +42,9 @@ persistent collection management for golang
 albums/albums.go:
 
 ```go
-import (
-	"github.com/sheenobu/cm.go"
-)
+import cm "github.com/sheenobu/cm.go"
 
-// Album defines the model for the music album
+// Album is the model for music album database
 type Album struct {
 	ID       *int
 	Artist   string
@@ -28,8 +53,9 @@ type Album struct {
 	Year     int64
 }
 
-// _Albums is the collection for the model.
-type _Albums struct {
+// AlbumsCollection defines the columns and operations for
+// the Album model
+type AlbumsCollection struct {
 	cm.Collection
 	ID       cm.ValueColumn
 	Artist   cm.ValueColumn
@@ -47,13 +73,18 @@ import (
 	"github.com/sheenobu/cm.go/sql"
 )
 
-// Collection is the albums collection
-var Collection *_Albums
+// Collection is the database attached reference
+// of the albums collection
+var Collection *AlbumsCollection
 
 func init() {
 	db, _ := sqlx.Connect("sqlite3", "albums.db")
-	Collection = &_Albums{
-		Collection: New(db, "ALBUMS"),
+
+	// initialize the fields, declaring what they do and how they map
+	Collection = &AlbumsCollection{
+		Collection: sql.New(db, "ALBUMS"), // db connection, table name
+
+		// if you want to use uuid's or some other generated key
 		//ID:		sql.Varchar("id", 32).PrimaryKey().FromFunction(uuidGen)
 
 		ID:       sql.Integer().PrimaryKey(),
@@ -62,7 +93,10 @@ func init() {
 		Year:     sql.Column("year", "number not null"),
 		Explicit: sql.Column("explicit", "bool not null default false"),
 	}
-	err := Collection.Init(Collection)
+
+	// Init performs the heavy lifting of creating the tables,
+	// pre-caching reflection results, building the querys.
+	_ = Collection.Init(Collection)
 }
 ```
 
