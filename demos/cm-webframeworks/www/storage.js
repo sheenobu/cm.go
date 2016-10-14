@@ -1,5 +1,6 @@
 
-var Storage = function() {
+var Storage = function(onError) {
+
 	this.url = "/api/frameworks";
 
 	this.load = function(page, cb) {
@@ -11,6 +12,7 @@ var Storage = function() {
 			cb(data)
 		}.bind(this),
 		error: function(xhr, status, err) {
+		  onError(this.url, status, err.toString())
 		  console.error(this.url, status, err.toString());
 		}.bind(this)
 	  });
@@ -26,6 +28,7 @@ var Storage = function() {
 			cb(data)
 		  }.bind(this),
 		  error: function(xhr, status, err) {
+		    onError(this.url, status, err.toString())
 			console.error(this.url, status, err.toString());
 		  }.bind(this)
 		});
@@ -40,7 +43,8 @@ var Storage = function() {
 				cb(data)
 		  }.bind(this),
 		  error: function(xhr, status, err) {
-				console.error(this.url, status, err.toString());
+			  onError(this.url, status, err.toString());
+			  console.error(this.url, status, err.toString());
 		  }.bind(this)
 		});
 	}

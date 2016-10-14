@@ -42,8 +42,11 @@
 
     <script>
 
-		this.storage = new Storage();
 		this.currentPage = 0;
+
+		onError(a, b, err) {
+		    Materialize.toast(b, 4000) // 4000 is the duration of the toast
+		}
 
 		onMount() {
 			$('.modal-trigger').leanModal();
@@ -95,6 +98,7 @@
 		    this.storage.load(this.currentPage, this.onData);
 		}
 
+		this.storage = new Storage(this.onError);
 		this.on("mount", this.onMount);
 
        </script>
