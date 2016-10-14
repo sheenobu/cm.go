@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
+	uuid "github.com/satori/go.uuid"
 	"github.com/sheenobu/cm.go"
 	"github.com/sheenobu/cm.go/sql"
 )
@@ -14,6 +15,10 @@ type _Frameworks struct {
 	Name        cm.ValueColumn
 	Description cm.ValueColumn
 	URL         cm.ValueColumn
+}
+
+func uuidGen() interface{} {
+	return uuid.NewV1().String()
 }
 
 // Frameworks is the database attached instance
@@ -32,7 +37,7 @@ func initDB() {
 	// We initialize the collection using a SQL based backend
 	Frameworks = &_Frameworks{
 		Collection:  sql.New(db, "frameworks"),
-		ID:          sql.Integer("id", 10).PrimaryKey(),
+		ID:          sql.Varchar("id", 32).PrimaryKey().FromFunction(uuidGen),
 		Name:        sql.Varchar("name", 100).NotNull(),
 		Description: sql.Varchar("description", 100).NotNull(),
 		URL:         sql.Varchar("url", 100).NotNull(),
