@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,8 +10,6 @@ import (
 	"net/http"
 
 	"strconv"
-
-	"golang.org/x/net/context"
 
 	"github.com/bmizerany/pat"
 	"github.com/codegangsta/negroni"
@@ -72,6 +71,8 @@ type FrameworksPayload struct {
 // and supporting pagination
 func frameworksRead(w http.ResponseWriter, r *http.Request) {
 
+	ctx := context.Background()
+
 	perPage := r.URL.Query().Get("perPage")
 	if perPage == "" {
 		perPage = "3"
@@ -118,7 +119,7 @@ func frameworksRead(w http.ResponseWriter, r *http.Request) {
 
 	frameworks.CurrentPage = pager.CurrentPage()
 
-	err = pager.Apply(&frameworks.Frameworks)
+	err = pager.Apply(ctx, &frameworks.Frameworks)
 
 	if err != nil {
 		w.Header()["Content-Type"] = []string{"text/plain"}

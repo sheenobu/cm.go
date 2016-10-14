@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/sheenobu/cm.go/tx"
-	"golang.org/x/net/context"
 )
 
 // main creates the database, creates some initial data, then starts the HTTP server

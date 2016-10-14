@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -9,8 +10,6 @@ import (
 	"github.com/sheenobu/cm.go"
 
 	"reflect"
-
-	"golang.org/x/net/context"
 )
 
 // Table defines the Collection that interacts with a sqlx.DB connection

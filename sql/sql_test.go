@@ -1,14 +1,14 @@
 package sql
 
 import (
+	"context"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sheenobu/cm.go"
 
 	"os"
 	"testing"
-
-	"golang.org/x/net/context"
 )
 
 // Car defines the model object we are using.

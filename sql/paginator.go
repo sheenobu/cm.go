@@ -1,11 +1,11 @@
 package sql
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
-	"golang.org/x/net/context"
 )
 
 // Paginator is the SQL implementation of the cm.Paginator
