@@ -136,7 +136,7 @@ func TestEqFilter(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Filter(Cars.Year.Eq("1993")).List(ctx, &cars)
 
@@ -196,7 +196,7 @@ func TestNotEqFilter(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Filter(Cars.Year.NotEq("1993")).List(ctx, &cars)
 
@@ -267,7 +267,7 @@ func TestLikeFilter(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Filter(Cars.Model.Like(false, "%a")).List(ctx, &cars)
 
@@ -320,7 +320,7 @@ func TestUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Edit(Cars.Model.Set("Whatever")).Update(ctx)
 
@@ -366,7 +366,7 @@ func TestUpdateFilterL(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Filter(Cars.Model.Eq("Honda")).Edit(Cars.Model.Set("Whatever")).Update(ctx)
 
@@ -417,7 +417,7 @@ func TestUpdateFilterR(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Edit(Cars.Model.Set("Whatever")).Filter(Cars.Model.Eq("Honda")).Update(ctx)
 
@@ -468,7 +468,7 @@ func TestDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Delete(ctx)
 
@@ -505,7 +505,7 @@ func TestDeleteFilter(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	err = Cars.Filter(Cars.Model.Eq("Honda")).Delete(ctx)
 
@@ -554,7 +554,7 @@ func TestInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 	if err = Cars.List(ctx, &cars); err != nil {
 		t.Error(err)
 	}
@@ -635,7 +635,7 @@ func TestPaginationDevideOddly(t *testing.T) {
 		t.Errorf("Expected current page after Next to be 1, was %d", i)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	if err := page.Apply(&cars); err != nil {
 		t.Error(err)
@@ -668,7 +668,7 @@ func TestPaginationDevideOddly(t *testing.T) {
 
 	ok = true
 
-	lengths := make([]int, 0)
+	var lengths []int
 
 	for ok {
 		cars = make([]Car, 0)
@@ -763,7 +763,7 @@ func TestPaginationDevideEvently(t *testing.T) {
 		t.Errorf("Expected current page after Next to be 1, was %d", i)
 	}
 
-	cars := make([]Car, 0)
+	var cars []Car
 
 	if err := page.Apply(&cars); err != nil {
 		t.Error(err)
@@ -796,7 +796,7 @@ func TestPaginationDevideEvently(t *testing.T) {
 
 	ok = true
 
-	lengths := make([]int, 0)
+	var lengths []int
 
 	for ok {
 		cars = make([]Car, 0)

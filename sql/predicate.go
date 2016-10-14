@@ -6,8 +6,8 @@ import (
 	"github.com/sheenobu/cm.go"
 )
 
-// SqlEqPredicate is the predicate which wraps a SQL equal comparison
-type SqlEqPredicate struct {
+// EqPredicate is the predicate which wraps a SQL equal comparison
+type EqPredicate struct {
 	Column cm.ValueColumn
 	Value  interface{}
 }
@@ -15,8 +15,8 @@ type SqlEqPredicate struct {
 // begin Predicate implementation
 
 // Apply modifies the collection to add the equal operation
-func (pred *SqlEqPredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
+func (pred *EqPredicate) Apply(c cm.Collection) error {
+	col := c.(*Table)
 	col.filterStatements = append(col.filterStatements,
 		fmt.Sprintf("%s = ?", pred.Column.Name()))
 
@@ -27,8 +27,8 @@ func (pred *SqlEqPredicate) Apply(c cm.Collection) error {
 
 // end Predicate implementation
 
-// SqlNotEqPredicate is the predicate which wraps a SQL not equal comparison
-type SqlNotEqPredicate struct {
+// NotEqPredicate is the predicate which wraps a SQL not equal comparison
+type NotEqPredicate struct {
 	Column cm.ValueColumn
 	Value  interface{}
 }
@@ -36,8 +36,8 @@ type SqlNotEqPredicate struct {
 // begin Predicate implementation
 
 // Apply modifies the collection to add the not equal operation
-func (pred *SqlNotEqPredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
+func (pred *NotEqPredicate) Apply(c cm.Collection) error {
+	col := c.(*Table)
 	col.filterStatements = append(col.filterStatements,
 		fmt.Sprintf("%s != ?", pred.Column.Name()))
 
@@ -48,8 +48,8 @@ func (pred *SqlNotEqPredicate) Apply(c cm.Collection) error {
 
 // end Predicate implementation
 
-// SqlLikePredicate is the predicate which wraps a SQL like comparison
-type SqlLikePredicate struct {
+// LikePredicate is the predicate which wraps a SQL like comparison
+type LikePredicate struct {
 	Column        cm.ValueColumn
 	Value         interface{}
 	CaseSensitive bool
@@ -58,8 +58,8 @@ type SqlLikePredicate struct {
 // begin Predicate implementation
 
 // Apply modifies the collection to add the like operation
-func (pred *SqlLikePredicate) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
+func (pred *LikePredicate) Apply(c cm.Collection) error {
+	col := c.(*Table)
 
 	like := "like"
 

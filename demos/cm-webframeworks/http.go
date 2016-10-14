@@ -16,12 +16,12 @@ import (
 	"github.com/codegangsta/negroni"
 )
 
-var mux *http.ServeMux = http.NewServeMux()
-var router *pat.PatternServeMux = pat.New()
+var mux = http.NewServeMux()
+var router = pat.New()
 
-// initHttp starts up the various routers for hosting our static web interface
+// initHTTP starts up the various routers for hosting our static web interface
 // and the API to our datamodel.
-func initHttp() {
+func initHTTP() {
 	n := negroni.New()
 	n.UseHandler(mux)
 
@@ -58,7 +58,7 @@ func infoRoute(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// FrameworkPayload is a wrapper object for passing along pagination information
+// FrameworksPayload is a wrapper object for passing along pagination information
 // as well as the framework list.
 type FrameworksPayload struct {
 	Frameworks  []Framework
@@ -141,7 +141,7 @@ func frameworkGet(w http.ResponseWriter, r *http.Request) {
 
 	var frameworks []Framework
 
-	err := Frameworks.Filter(Frameworks.Id.Eq(id)).Single(ctx, &frameworks)
+	err := Frameworks.Filter(Frameworks.ID.Eq(id)).Single(ctx, &frameworks)
 
 	w.Header()["Content-Type"] = []string{"application/json"}
 
@@ -206,7 +206,7 @@ func frameworkDelete(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get(":id")
 
-	err := Frameworks.Filter(Frameworks.Id.Eq(id)).Delete(ctx)
+	err := Frameworks.Filter(Frameworks.ID.Eq(id)).Delete(ctx)
 
 	if err != nil {
 		w.WriteHeader(500)

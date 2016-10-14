@@ -6,15 +6,15 @@ import (
 	"github.com/sheenobu/cm.go"
 )
 
-// SqlUpdateOperation is the predicate which wraps a SQL update operation
-type SqlUpdateOperation struct {
+// UpdateOperation is the predicate which wraps a SQL update operation
+type UpdateOperation struct {
 	Column cm.ValueColumn
 	Value  interface{}
 }
 
 // Apply modifies the collection to add the equal operation
-func (op *SqlUpdateOperation) Apply(c cm.Collection) error {
-	col := c.(*SqlTable)
+func (op *UpdateOperation) Apply(c cm.Collection) error {
+	col := c.(*Table)
 	col.updateStatements = append(col.updateStatements,
 		fmt.Sprintf("%s = ?", op.Column.Name()))
 

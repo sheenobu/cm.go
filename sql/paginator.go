@@ -8,13 +8,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-// SqlPaginator is the SQL implementation of the cm.Paginator
-type SqlPaginator struct {
+// Paginator is the SQL implementation of the cm.Paginator
+type Paginator struct {
 	database     *sqlx.DB
 	selectQuery  string
 	countQuery   string
 	perPageCount int
-	parent       SqlTable
+	parent       Table
 
 	// mutable state
 	pageCount   int
@@ -24,7 +24,7 @@ type SqlPaginator struct {
 
 // Init initializes the paginator by running the initial
 // count query
-func (p *SqlPaginator) Init(ctx context.Context) (err error) {
+func (p *Paginator) Init(ctx context.Context) (err error) {
 
 	var count []int
 	err = p.database.Select(&count, p.countQuery)
@@ -49,28 +49,28 @@ func (p *SqlPaginator) Init(ctx context.Context) (err error) {
 // begin cm.Paginator implementation
 
 // PageCount returns the number of pages of this paginator
-func (p SqlPaginator) PageCount() int {
+func (p Paginator) PageCount() int {
 	return p.pageCount
 }
 
 // CurrentPage returns the current page of the pagintor
-func (p SqlPaginator) CurrentPage() int {
+func (p Paginator) CurrentPage() int {
 	return p.currentPage
 }
 
 // ItemCount returns the totel item count of the paginator
-func (p SqlPaginator) ItemCount() int {
+func (p Paginator) ItemCount() int {
 	return p.itemCount
 }
 
 // PerPageCount returns the per-page count of the pagintor
-func (p SqlPaginator) PerPageCount() int {
+func (p Paginator) PerPageCount() int {
 	return p.perPageCount
 }
 
 // Next increases the current page by one, unless the current page
 // is the last page.
-func (p *SqlPaginator) Next() bool {
+func (p *Paginator) Next() bool {
 	if p.currentPage == p.pageCount-1 {
 		return false
 	}
@@ -81,7 +81,7 @@ func (p *SqlPaginator) Next() bool {
 
 // Prev decreases the current page by one, unless the current page
 // is 0
-func (p *SqlPaginator) Prev() bool {
+func (p *Paginator) Prev() bool {
 	if p.currentPage == 0 {
 		return false
 	}
@@ -92,7 +92,7 @@ func (p *SqlPaginator) Prev() bool {
 
 // Apply runs the paginating query against the database, inserting it into the
 // given list
-func (p SqlPaginator) Apply(list interface{}) (err error) {
+func (p Paginator) Apply(list interface{}) (err error) {
 	q := p.selectQuery + " limit " + strconv.Itoa(p.perPageCount) + " offset " + strconv.Itoa(p.currentPage*p.perPageCount)
 	err = p.database.Select(list, q, p.parent.filterValues...)
 	return err

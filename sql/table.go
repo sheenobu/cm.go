@@ -13,9 +13,9 @@ import (
 	"golang.org/x/net/context"
 )
 
-// SqlTable defines the Collection that interacts with a sqlx.DB connection
-type SqlTable struct {
-	Table string
+// Table defines the Collection that interacts with a sqlx.DB connection
+type Table struct {
+	Name string
 
 	database     *sqlx.DB
 	asColumns    []string
@@ -28,10 +28,10 @@ type SqlTable struct {
 	filterValues     []interface{}
 }
 
-// New defines a new SqlTable based on the database connection and table name.
-func New(db *sqlx.DB, table string) *SqlTable {
-	return &SqlTable{
-		Table:    table,
+// New defines a new Table based on the database connection and table name.
+func New(db *sqlx.DB, table string) *Table {
+	return &Table{
+		Name:     table,
 		database: db,
 
 		asColumns:    make([]string, 0),
@@ -49,8 +49,8 @@ func New(db *sqlx.DB, table string) *SqlTable {
 
 // Init initializes the sql table by performing reflection operations
 // on the interface
-func (sql *SqlTable) Init(iface interface{}) error {
-	columns := make([]string, 0)
+func (sql *Table) Init(iface interface{}) error {
+	var columns []string
 
 	s := reflect.ValueOf(iface).Elem()
 	st := reflect.TypeOf(iface).Elem()
@@ -61,7 +61,7 @@ func (sql *SqlTable) Init(iface interface{}) error {
 
 		if f.Type().Name() == "ValueColumn" {
 
-			vc := f.Interface().(SqlValueColumn)
+			vc := f.Interface().(ValueColumn)
 
 			columns = append(columns, vc.Build())
 
@@ -88,29 +88,29 @@ func (sql *SqlTable) Init(iface interface{}) error {
 	createTable := fmt.Sprintf(`
 		create table %s
 			(%s);
-	`, sql.Table, strings.Join(columns, ", "))
+	`, sql.Name, strings.Join(columns, ", "))
 
 	_, err := sql.database.Exec(createTable)
 
-	return err
+	return mapError(err)
 }
 
 // Filter filters the collection on the given predicate
-func (sql SqlTable) Filter(pred cm.Predicate) cm.Collection {
+func (sql Table) Filter(pred cm.Predicate) cm.Collection {
 	pred.Apply(&sql)
 	return &sql
 }
 
 // Edit updates the collection for the given operation
-func (sql SqlTable) Edit(op cm.Operation) cm.Collection {
+func (sql Table) Edit(op cm.Operation) cm.Collection {
 	op.Apply(&sql)
 	return &sql
 }
 
 // List resolves the collection and applies the results to the given slice pointer
-func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
+func (sql Table) List(ctx context.Context, list interface{}) (err error) {
 
-	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Name
 
 	if len(sql.filterStatements) == 0 {
 		err = sql.database.Select(list, selectQ)
@@ -123,17 +123,17 @@ func (sql SqlTable) List(ctx context.Context, list interface{}) (err error) {
 }
 
 // Page returns a pagination object which is responsible for resolving the collection
-func (sql SqlTable) Page(ctx context.Context, perPageCount int) (cm.Paginator, error) {
+func (sql Table) Page(ctx context.Context, perPageCount int) (cm.Paginator, error) {
 
-	countQ := "select count(" + sql.insColumns[0] + ") from " + sql.Table
-	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
+	countQ := "select count(" + sql.insColumns[0] + ") from " + sql.Name
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Name
 
 	if len(sql.filterStatements) != 0 {
 		selectQ = selectQ + " where " + strings.Join(sql.filterStatements, " and ")
 		countQ = countQ + " where " + strings.Join(sql.filterStatements, " and ")
 	}
 
-	sp := SqlPaginator{
+	sp := Paginator{
 		database:     sql.database,
 		selectQuery:  selectQ,
 		countQuery:   countQ,
@@ -146,8 +146,8 @@ func (sql SqlTable) Page(ctx context.Context, perPageCount int) (cm.Paginator, e
 }
 
 // Single resolves the collection and applies the results to the given slice pointer.
-func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) {
-	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Table
+func (sql Table) Single(ctx context.Context, single interface{}) (err error) {
+	selectQ := "select " + strings.Join(sql.asColumns, ", ") + " from " + sql.Name
 
 	if len(sql.filterStatements) == 0 {
 		err = sql.database.Select(single, selectQ+" limit 1")
@@ -158,8 +158,8 @@ func (sql SqlTable) Single(ctx context.Context, single interface{}) (err error) 
 }
 
 // Delete resolves the collection using the filters and deletes the filtered elements.
-func (sql SqlTable) Delete(ctx context.Context) (err error) {
-	deleteQ := "delete from " + sql.Table
+func (sql Table) Delete(ctx context.Context) (err error) {
+	deleteQ := "delete from " + sql.Name
 
 	if len(sql.filterStatements) == 0 {
 		_, err = sql.database.Exec(deleteQ)
@@ -171,12 +171,12 @@ func (sql SqlTable) Delete(ctx context.Context) (err error) {
 }
 
 // Update resolves the collection using the filters and updates the filtered elements using the operations
-func (sql SqlTable) Update(ctx context.Context) (err error) {
-	updateQ := "update " + sql.Table + " set "
+func (sql Table) Update(ctx context.Context) (err error) {
+	updateQ := "update " + sql.Name + " set "
 
 	updateQ = updateQ + " " + strings.Join(sql.updateStatements, ", ")
 
-	vals := make([]interface{}, 0)
+	var vals []interface{}
 	vals = append(vals, sql.updateValues...)
 	vals = append(vals, sql.filterValues...)
 
@@ -190,13 +190,13 @@ func (sql SqlTable) Update(ctx context.Context) (err error) {
 }
 
 // Insert inserts the given object
-func (sql SqlTable) Insert(ctx context.Context, i interface{}) (err error) {
-	insertQ := "insert into " + sql.Table + " (" + strings.Join(sql.insColumns, ",") + ") values "
+func (sql Table) Insert(ctx context.Context, i interface{}) (err error) {
+	insertQ := "insert into " + sql.Name + " (" + strings.Join(sql.insColumns, ",") + ") values "
 	insertQ = insertQ + " (" + strings.Join(sql.namedColumns, ",") + ")"
 
 	query, args, err := sqlx.Named(insertQ, i)
 
-	arg2 := make([]interface{}, 0)
+	var arg2 []interface{}
 
 	for _, a := range args {
 		if s, ok := a.(string); ok && s == "" {
@@ -216,7 +216,7 @@ func (sql SqlTable) Insert(ctx context.Context, i interface{}) (err error) {
 }
 
 // ExecRaw executes a raw statement against the collection
-func (sql SqlTable) ExecRaw(ctx context.Context, query string) error {
+func (sql Table) ExecRaw(ctx context.Context, query string) error {
 	_, err := sql.database.Exec(query)
 	return err
 }
