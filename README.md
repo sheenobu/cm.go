@@ -14,7 +14,7 @@ persistent collection management for golang
 
 albums/albums.go:
 
-```
+```go
 import (
 	"github.com/sheenobu/cm.go"
 )
@@ -41,7 +41,7 @@ type _Albums struct {
 
 albums/albums\_sqlite.go:
 
-```
+```go
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sheenobu/cm.go/sql"
@@ -68,7 +68,7 @@ func init() {
 
 main.go:
 
-```
+```go
 import (
 	"albums"
 	"context"

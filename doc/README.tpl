@@ -13,19 +13,19 @@ persistent collection management for golang
 
 albums/albums.go:
 
-```
+```go
 {{ shell "tail -n+5 ./albums/albums.go" }}
 ```
 
 albums/albums\_sqlite.go:
 
-```
+```go
 {{ shell "tail -n+5 ./albums/albums_sqlite.go" }}
 ```
 
 main.go:
 
-```
+```go
 {{ shell "tail -n+5 ./main.go" }}
 ```
 
