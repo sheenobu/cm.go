@@ -3,6 +3,8 @@
 -->
 # cm.go
 
+Status: not sure... making it open source for now.
+
 persistent collection management for golang, via declarative structs.
 
 A few of the benifits of this approach are:
@@ -104,8 +106,8 @@ main.go:
 
 ```go
 import (
-	"albums"
 	"context"
+	"github.com/sheenobu/cm.go/doc/albums"
 )
 
 // Albums is an optional shortcut for our example code

@@ -3,8 +3,8 @@
 package main
 
 import (
-	"albums"
 	"context"
+	"github.com/sheenobu/cm.go/doc/albums"
 )
 
 // Albums is an optional shortcut for our example code

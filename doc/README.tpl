@@ -2,6 +2,8 @@
 -->
 # cm.go
 
+Status: not sure... making it open source for now.
+
 persistent collection management for golang, via declarative structs.
 
 A few of the benifits of this approach are:
